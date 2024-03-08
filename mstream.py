@@ -3,6 +3,7 @@ from nltk.corpus import stopwords
 import nltk
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
+from sklearn.feature_extraction.text import CountVectorizer
 tweets = pd.read_csv('text.csv')
 print(tweets.head(5))
 print(len(tweets))
@@ -66,3 +67,19 @@ plt.xlabel('Tweet Length')
 plt.ylabel('Frequency')
 plt.title('Distribution of Tweet Lengths')
 plt.show()
+
+
+# feature extraction
+
+
+# Create a CountVectorizer object
+vectorizer = CountVectorizer()
+
+# Fit and transform the 'text' column
+X = vectorizer.fit_transform(tweets['text'])
+
+# Convert the result to a DataFrame
+features = pd.DataFrame(X.toarray(), columns=vectorizer.get_feature_names_out())
+
+# Print the features
+print(features)
