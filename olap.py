@@ -114,6 +114,7 @@ from sklearn import metrics
 vectorizer = TfidfVectorizer()
 X = vectorizer.fit_transform([' '.join(doc) for doc in documents])
 
+
 # Run the KMeans algorithm
 kmeans = KMeans(n_clusters=3, random_state=0).fit(X)
 
@@ -124,6 +125,29 @@ kmeans_predicted_labels = kmeans.labels_
 kmeans_ari = metrics.adjusted_rand_score(true_labels, kmeans_predicted_labels)
 kmeans_nmi = metrics.normalized_mutual_info_score(true_labels, kmeans_predicted_labels)
 kmeans_fmi = metrics.fowlkes_mallows_score(true_labels, kmeans_predicted_labels)
+
+# Get the features (words) from the vectorizer
+features = vectorizer.get_feature_names_out()
+
+# For each cluster
+for i in range(3):
+    # Get the centroid of the cluster
+    centroid = kmeans.cluster_centers_[i]
+    
+    # Sort the features by their importance in the centroid
+    sorted_features = sorted(zip(features, centroid), key=lambda x: x[1], reverse=True)
+    
+    # Get the top 10 features
+    top_features = dict(sorted_features[:10])
+    
+    # Generate a word cloud
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(top_features)
+    
+    # Display the word cloud
+    plt.figure()
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.show()
 
 # Print the metrics for the KMeans algorithm
 print(f"KMeans ARI: {kmeans_ari}, NMI: {kmeans_nmi}, FMI: {kmeans_fmi}")
